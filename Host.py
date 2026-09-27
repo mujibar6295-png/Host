@@ -14,7 +14,6 @@ def home():
     return "Main Bot is alive and running!"
 
 def run_web_server():
-    # Render environment er PORT dhorbe, default 8080
     port = int(os.environ.get("PORT", 8080))
     app.run(host='0.0.0.0', port=port)
 
@@ -27,9 +26,8 @@ TOKEN = '8710736330:AAHsNib6LNJsaNAYBiIHAv6zgCKvXwyCTbs[span_0](start_span)'[spa
 bot = telebot.TeleBot(TOKEN)[span_1](start_span)[span_1](end_span)
 
 running_bots = {}[span_2](start_span)[span_2](end_span)
-deploy_sessions = {} # User der deploy step gulo track korar jonno[span_3](start_span)[span_3](end_span)
+deploy_sessions = {}[span_3](start_span)[span_3](end_span)
 
-# Main Keyboard
 def get_main_keyboard():
     markup = ReplyKeyboardMarkup(resize_keyboard=True, row_width=2)[span_4](start_span)[span_4](end_span)
     markup.add(KeyboardButton("🚀 Deploy Bot"), KeyboardButton("⚙️ Manage Bot"))[span_5](start_span)[span_5](end_span)
@@ -51,7 +49,11 @@ def deploy_bot_prompt(message):
 
 def handle_py_file(message):
     if not message.document or not message.document.file_name.endswith('.py'):[span_10](start_span)[span_10](end_span)
-        msg = bot.send_message(message.chat.id, "❌ Doya kore ekta valid .py file send korun! (Try again 🚀 Deploy Bot)", reply_markup=get_main_keyboard())[span_11](start_span)[span_11](end_span)
+        msg = bot.send_message(
+            message.chat.id, 
+            "❌ Doya kore ekta valid .py file send korun! (Try again 🚀 Deploy Bot)", 
+            reply_markup=get_main_keyboard()
+        )[span_11](start_span)[span_11](end_span)
         return[span_12](start_span)[span_12](end_span)
 
     bot.send_message(message.chat.id, "⏳ Python File downloading...")[span_13](start_span)[span_13](end_span)
@@ -188,7 +190,6 @@ def handle_management(call):
 
 # ==================== MAIN RUNNER ====================
 if __name__ == "__main__":
-    # Flask Web Server start hobe
     keep_alive()
     print("Main Host Bot is running with Flask keep-alive server...")
     bot.infinity_polling()
