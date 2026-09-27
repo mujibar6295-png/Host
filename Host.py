@@ -1,10 +1,16 @@
-import telebot
-from telebot.types import ReplyKeyboardMarkup, KeyboardButton, InlineKeyboardMarkup, InlineKeyboardButton, ReplyKeyboardRemove
-import subprocess
 import os
 import re
-from flask import Flask
+import subprocess
 from threading import Thread
+from flask import Flask
+import telebot
+from telebot.types import (
+    InlineKeyboardButton,
+    InlineKeyboardMarkup,
+    KeyboardButton,
+    ReplyKeyboardMarkup,
+    ReplyKeyboardRemove,
+)
 
 # ==================== FLASK KEEP-ALIVE SERVER ====================
 app = Flask('')
@@ -36,22 +42,26 @@ def get_main_keyboard():
 @bot.message_handler(commands=['start'])
 def start(message):
     bot.send_message(
-        message.chat.id, 
-        "Welcome to Bot Hoster! 🤖\n\nNiche theke option select korun:", 
+        message.chat.id,
+        "Welcome to Bot Hoster! 🤖\n\nNiche theke option select korun:",
         reply_markup=get_main_keyboard()
     )[span_7](start_span)[span_7](end_span)
 
 # ==================== DEPLOY BOT LOGIC ====================
 @bot.message_handler(func=lambda message: message.text == "🚀 Deploy Bot")
 def deploy_bot_prompt(message):
-    msg = bot.send_message(message.chat.id, "Apnar bot er `.py` file ta ekhane send korun...", reply_markup=ReplyKeyboardRemove())[span_8](start_span)[span_8](end_span)
+    msg = bot.send_message(
+        message.chat.id,
+        "Apnar bot er `.py` file ta ekhane send korun...",
+        reply_markup=ReplyKeyboardRemove()
+    )[span_8](start_span)[span_8](end_span)
     bot.register_next_step_handler(msg, handle_py_file)[span_9](start_span)[span_9](end_span)
 
 def handle_py_file(message):
     if not message.document or not message.document.file_name.endswith('.py'):[span_10](start_span)[span_10](end_span)
         msg = bot.send_message(
-            message.chat.id, 
-            "❌ Doya kore ekta valid .py file send korun! (Try again 🚀 Deploy Bot)", 
+            message.chat.id,
+            "❌ Doya kore ekta valid .py file send korun! (Try again 🚀 Deploy Bot)",
             reply_markup=get_main_keyboard()
         )[span_11](start_span)[span_11](end_span)
         return[span_12](start_span)[span_12](end_span)
@@ -71,8 +81,8 @@ def handle_py_file(message):
     markup.add(KeyboardButton("⏭️ Skip"))[span_21](start_span)[span_21](end_span)
     
     msg = bot.send_message(
-        message.chat.id, 
-        f"✅ `{file_name}` downloaded!\n\nEbar jodi apnar kono `requirements.txt` file thake, seta send korun.\nNa thakle nicher **Skip** button a click korun.", 
+        message.chat.id,
+        f"✅ `{file_name}` downloaded!\n\nEbar jodi apnar kono `requirements.txt` file thake, seta send korun.\nNa thakle nicher **Skip** button a click korun.",
         reply_markup=markup,
         parse_mode="Markdown"
     )[span_22](start_span)[span_22](end_span)
@@ -86,11 +96,19 @@ def handle_requirements_file(message):
     py_file_name = user_session['py_file'][span_27](start_span)[span_27](end_span)
 
     if message.text == "⏭️ Skip":[span_28](start_span)[span_28](end_span)
-        bot.send_message(message.chat.id, "⏩ Skipped requirements.txt. Auto-detecting packages...", reply_markup=get_main_keyboard())[span_29](start_span)[span_29](end_span)
+        bot.send_message(
+            message.chat.id,
+            "⏩ Skipped requirements.txt. Auto-detecting packages...",
+            reply_markup=get_main_keyboard()
+        )[span_29](start_span)[span_29](end_span)
         run_bot_process(message.chat.id, py_file_name, req_file=None)[span_30](start_span)[span_30](end_span)
         
     elif message.document and message.document.file_name == 'requirements.txt':[span_31](start_span)[span_31](end_span)
-        bot.send_message(message.chat.id, "⏳ Downloading requirements.txt...", reply_markup=get_main_keyboard())[span_32](start_span)[span_32](end_span)
+        bot.send_message(
+            message.chat.id,
+            "⏳ Downloading requirements.txt...",
+            reply_markup=get_main_keyboard()
+        )[span_32](start_span)[span_32](end_span)
         
         file_info = bot.get_file(message.document.file_id)[span_33](start_span)[span_33](end_span)
         downloaded_file = bot.download_file(file_info.file_path)[span_34](start_span)[span_34](end_span)
@@ -137,8 +155,8 @@ def run_bot_process(chat_id, py_file_name, req_file=None):
         running_bots[chat_id][py_file_name] = process[span_60](start_span)[span_60](end_span)
         
         bot.send_message(
-            chat_id, 
-            f"🎉 **Bot Successfully Deployed!**\n\n📁 File: `{py_file_name}` is now live in the background.", 
+            chat_id,
+            f"🎉 **Bot Successfully Deployed!**\n\n📁 File: `{py_file_name}` is now live in the background.",
             parse_mode="Markdown"
         )[span_61](start_span)[span_61](end_span)
         
@@ -162,31 +180,41 @@ def manage_bots(message):
         markup.add(
             InlineKeyboardButton(f"🛑 Stop {b_name}", callback_data=f"stop_{b_name}"),[span_72](start_span)[span_72](end_span)
             InlineKeyboardButton(f"🗑 Delete {b_name}", callback_data=f"del_{b_name}")[span_73](start_span)[span_73](end_span)
-        )
+        )[span_74](start_span)[span_74](end_span)
         
-    bot.send_message(message.chat.id, "👇 Niche theke apnar bot manage korun:", reply_markup=markup)[span_74](start_span)[span_74](end_span)
+    bot.send_message(message.chat.id, "👇 Niche theke apnar bot manage korun:", reply_markup=markup)[span_75](start_span)[span_75](end_span)
 
 @bot.callback_query_handler(func=lambda call: call.data.startswith('stop_') or call.data.startswith('del_'))
 def handle_management(call):
-    action, bot_name = call.data.split('_', 1)[span_75](start_span)[span_75](end_span)
-    user_id = call.message.chat.id[span_76](start_span)[span_76](end_span)
+    action, bot_name = call.data.split('_', 1)[span_76](start_span)[span_76](end_span)
+    user_id = call.message.chat.id[span_77](start_span)[span_77](end_span)
     
-    process = running_bots.get(user_id, {}).get(bot_name)[span_77](start_span)[span_77](end_span)
+    process = running_bots.get(user_id, {}).get(bot_name)[span_78](start_span)[span_78](end_span)
     
-    if process:[span_78](start_span)[span_78](end_span)
-        process.terminate()[span_79](start_span)[span_79](end_span)
+    if process:[span_79](start_span)[span_79](end_span)
+        process.terminate()[span_80](start_span)[span_80](end_span)
         
-        if action == 'del':[span_80](start_span)[span_80](end_span)
-            del running_bots[user_id][bot_name][span_81](start_span)[span_81](end_span)
-            if os.path.exists(bot_name):[span_82](start_span)[span_82](end_span)
-                os.remove(bot_name)[span_83](start_span)[span_83](end_span)
-            bot.answer_callback_query(call.id, f"{bot_name} Deleted!")[span_84](start_span)[span_84](end_span)
-            bot.edit_message_text(f"🗑 `{bot_name}` file deleted ar bot stopped.", user_id, call.message.message_id, parse_mode="Markdown")[span_85](start_span)[span_85](end_span)
+        if action == 'del':[span_81](start_span)[span_81](end_span)
+            del running_bots[user_id][bot_name][span_82](start_span)[span_82](end_span)
+            if os.path.exists(bot_name):[span_83](start_span)[span_83](end_span)
+                os.remove(bot_name)[span_84](start_span)[span_84](end_span)
+            bot.answer_callback_query(call.id, f"{bot_name} Deleted!")[span_85](start_span)[span_85](end_span)
+            bot.edit_message_text(
+                f"🗑 `{bot_name}` file deleted ar bot stopped.",
+                user_id,
+                call.message.message_id,
+                parse_mode="Markdown"
+            )[span_86](start_span)[span_86](end_span)
         else:
-            bot.answer_callback_query(call.id, f"{bot_name} Stopped!")[span_86](start_span)[span_86](end_span)
-            bot.edit_message_text(f"🛑 `{bot_name}` ekhon paused/stopped ache.", user_id, call.message.message_id, parse_mode="Markdown")[span_87](start_span)[span_87](end_span)
+            bot.answer_callback_query(call.id, f"{bot_name} Stopped!")[span_87](start_span)[span_87](end_span)
+            bot.edit_message_text(
+                f"🛑 `{bot_name}` ekhon paused/stopped ache.",
+                user_id,
+                call.message.message_id,
+                parse_mode="Markdown"
+            )[span_88](start_span)[span_88](end_span)
     else:
-        bot.answer_callback_query(call.id, "Bot already stopped ba not found!", show_alert=True)[span_88](start_span)[span_88](end_span)
+        bot.answer_callback_query(call.id, "Bot already stopped ba not found!", show_alert=True)[span_89](start_span)[span_89](end_span)
 
 # ==================== MAIN RUNNER ====================
 if __name__ == "__main__":
